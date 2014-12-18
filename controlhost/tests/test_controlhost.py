@@ -2,6 +2,7 @@
 # Filename: test_controlhost.py
 # pylint: disable=locally-disabled,C0111,R0904,R0201,C0103,W0612
 """
+Unit tests for the controlhost module.
 
 """
 from __future__ import absolute_import, print_function

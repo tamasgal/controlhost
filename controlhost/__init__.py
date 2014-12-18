@@ -6,7 +6,7 @@ A set of classes and tools wich uses the ControlHost protocol.
 """
 from __future__ import absolute_import
 
-from controlhost.__version__ import version, version_info
+from controlhost.__version__ import version
 
 __author__ = "Tamas Gal"
 __copyright__ = ("Copyright 2014, Tamas Gal and the KM3NeT collaboration "
@@ -20,17 +20,21 @@ __status__ = "Development"
 
 
 class Tag(object):
+    """Represents the tag in a ControlHost Prefix."""
     SIZE = 8
+
     def __init__(self, data=None):
         self._data = b''
         self.data = data
 
     @property
     def data(self):
+        """The byte data"""
         return self._data
 
     @data.setter
     def data(self, value):
+        """Set the byte data and fill up the bytes to fit the size."""
         if not value:
             value = b''
         if len(value) > self.SIZE:
@@ -47,8 +51,10 @@ class Tag(object):
 
 
 class Prefix(object):
+    """The prefix of a ControlHost message."""
     pass
 
 
 class Message(object):
+    """The representation of a ControlHost message."""
     pass

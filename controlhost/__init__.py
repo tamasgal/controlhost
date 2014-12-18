@@ -20,11 +20,35 @@ __status__ = "Development"
 
 
 class Tag(object):
-    def __init__(self):
-        pass
+    SIZE = 8
+    def __init__(self, data=None):
+        self._data = b''
+        self.data = data
 
-class Message(object):
-    pass
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, value):
+        if not value:
+            value = b''
+        if len(value) > self.SIZE:
+            raise ValueError("The maximum tag size is {0}".format(self.SIZE))
+        self._data = value
+        while len(self._data) < self.SIZE:
+            self._data += b'\x00'
+
+    def __str__(self):
+        return str(self.data).strip('\x00')
+
+    def __len__(self):
+        return len(self._data)
+
 
 class Prefix(object):
+    pass
+
+
+class Message(object):
     pass

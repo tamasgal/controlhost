@@ -12,7 +12,6 @@ setup(name='controlhost',
       include_package_data=True,
       platforms='any',
       install_requires=[
-          'docopt',
       ],
       entry_points={
           'console_scripts': [

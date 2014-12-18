@@ -3,7 +3,7 @@
 """
 
 """
-from __future__ import absolute_import, print_function, with_statement
+from __future__ import absolute_import, print_function
 
 import unittest
 
@@ -24,8 +24,7 @@ class TestTag(unittest.TestCase):
             self.assertEqual(Tag.SIZE, len(tag))
 
     def test_tag_with_invalid_length_raises_valueerror(self):
-        with self.assertRaises(ValueError):
-            tag = Tag('123456789')
+        self.assertRaises(ValueError, Tag, '123456789')
 
     def test_tag_has_correct_data(self):
         tag = Tag('foo')

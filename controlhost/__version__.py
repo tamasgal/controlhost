@@ -14,7 +14,7 @@ Example:
     '1.2b2'
 
 """
-version_info = (0, 1, 0, 'final', 0)
+VERSION = (0, 1, 0, 'final', 0)
 
 def get_version(version_info):
     """Return a PEP 386-compliant version number."""
@@ -22,7 +22,7 @@ def get_version(version_info):
     assert version_info[3] in ('alpha', 'beta', 'rc', 'final')
 
     parts = 2 if version_info[2] == 0 else 3
-    main = '.'.join(map(str, version_info[:parts]))
+    main = '.'.join([str(part) for part in version_info[:parts]])
 
     sub = ''
     if version_info[3] == 'alpha' and version_info[4] == 0:
@@ -33,5 +33,5 @@ def get_version(version_info):
 
     return str(main + sub)
 
-version = get_version(version_info)
+version = get_version((0, 1, 0, 'final', 0))
 

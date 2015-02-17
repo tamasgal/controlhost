@@ -8,6 +8,7 @@ from __future__ import absolute_import
 
 from controlhost.__version__ import version
 
+import socket
 import struct
 
 __author__ = "Tamas Gal"
@@ -19,6 +20,40 @@ __version__ = version
 __maintainer__ = "Tamas Gal"
 __email__ = "tgal@km3net.de"
 __status__ = "Development"
+
+
+class Client(object):
+    """The ControlHost client"""
+    def __init__(self, host, port=5553):
+        self.host = host
+        self.port = port
+        self.socket = None
+
+    def subscribe(self, tag):
+        message = Message('_Subscri', ' w ' + tag)
+        self.socket.send(message.data)
+        message = Message('_Always')
+        self.socket.send(message.data)
+
+    def get_message(self):
+        return self.socket.recv(Prefix.SIZE)
+
+    def _connect(self):
+        """Connect to JLigier"""
+        self.socket = socket.socket()
+        self.socket.connect((self.host, self.port))
+
+    def _disconnect(self):
+        """Close the socket"""
+        if self.socket:
+            self.socket.close()
+
+    def __enter__(self):
+        self._connect()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self._disconnect()
 
 
 class Message(object):

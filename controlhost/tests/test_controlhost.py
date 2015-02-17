@@ -42,9 +42,9 @@ class TestTag(unittest.TestCase):
 
 class TestPrefix(unittest.TestCase):
     def test_init(self):
-        prefix = Prefix()
+        prefix = Prefix('foo', 1)
 
 
 class TestMessage(unittest.TestCase):
     def test_init(self):
-        message = Message()
+        message = Message('')

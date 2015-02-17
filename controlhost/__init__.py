@@ -8,6 +8,8 @@ from __future__ import absolute_import
 
 from controlhost.__version__ import version
 
+import struct
+
 __author__ = "Tamas Gal"
 __copyright__ = ("Copyright 2014, Tamas Gal and the KM3NeT collaboration "
                  "(http://km3net.org)")
@@ -17,6 +19,17 @@ __version__ = version
 __maintainer__ = "Tamas Gal"
 __email__ = "tgal@km3net.de"
 __status__ = "Development"
+
+
+class Message(object):
+    """The representation of a ControlHost message."""
+    def __init__(self, tag, message=''):
+        self.prefix = Prefix(tag, len(message))
+        self.message = message
+
+    @property
+    def data(self):
+        return self.prefix.data + self.message
 
 
 class Tag(object):
@@ -52,9 +65,13 @@ class Tag(object):
 
 class Prefix(object):
     """The prefix of a ControlHost message."""
-    pass
+    SIZE = 16
 
+    def __init__(self, tag, length):
+        self.tag = Tag(tag)
+        self.length = length
 
-class Message(object):
-    """The representation of a ControlHost message."""
-    pass
+    @property
+    def data(self):
+        return self.tag.data + struct.pack('>i', self.length) + b'\x00'*4
+

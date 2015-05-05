@@ -1,9 +1,9 @@
 from setuptools import setup
 
-import controlhost
+from controlhost import version
 
 setup(name='controlhost',
-      version=controlhost.__version__,
+      version=version,
       url='https://github.com/tamasgal/controlhost/',
       description='A set of classes and tools wich uses the ControlHost protocol.',
       author='Tamas Gal',

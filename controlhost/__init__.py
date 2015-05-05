@@ -36,9 +36,9 @@ class Client(object):
         self.socket.send(message.data)
 
     def get_message(self):
-        data = self.socket.recv(Prefix.SIZE)
-        prefix = Prefix(data=data)
-        return prefix
+        prefix = Prefix(data=self.socket.recv(Prefix.SIZE))
+        message = self.socket.recv(Prefix.length)
+        return prefix, message
 
     def _connect(self):
         """Connect to JLigier"""

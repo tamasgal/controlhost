@@ -118,5 +118,5 @@ class Prefix(object):
     @data.setter
     def data(self, value):
         self.tag = Tag(data=value[:Tag.SIZE])
-        self.length = struct.unpack('>i', value[Tag.SIZE:Tag.SIZE+4])
+        self.length = struct.unpack('>i', value[Tag.SIZE:Tag.SIZE+4])[0]
 

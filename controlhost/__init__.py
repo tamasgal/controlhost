@@ -36,7 +36,9 @@ class Client(object):
         self.socket.send(message.data)
 
     def get_message(self):
-        return self.socket.recv(Prefix.SIZE)
+        data = self.socket.recv(Prefix.SIZE)
+        prefix = Prefix(data=data)
+        return prefix
 
     def _connect(self):
         """Connect to JLigier"""
@@ -102,11 +104,19 @@ class Prefix(object):
     """The prefix of a ControlHost message."""
     SIZE = 16
 
-    def __init__(self, tag, length):
-        self.tag = Tag(tag)
-        self.length = length
+    def __init__(self, tag=None, length=None, data=None):
+        if data:
+            self.data = data
+        else:
+            self.tag = Tag(tag)
+            self.length = length
 
     @property
     def data(self):
         return self.tag.data + struct.pack('>i', self.length) + b'\x00'*4
+
+    @data.setter
+    def data(self, value):
+        self.tag = Tag(data=value[:Tag.SIZE])
+        self.length = struct.unpack('>i', [Tag.SIZE:Tag.SIZE+4])
 

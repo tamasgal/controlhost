@@ -113,10 +113,10 @@ class Prefix(object):
 
     @property
     def data(self):
-        return self.tag.data + struct.pack('>i', self.length) + b'\x00'*4
+        return self.tag.data + struct.pack('>Q', self.length) # + b'\x00'*4
 
     @data.setter
     def data(self, value):
         self.tag = Tag(data=value[:Tag.SIZE])
-        self.length = struct.unpack('>i', value[Tag.SIZE:])[0]
+        self.length = struct.unpack('>Q', value[Tag.SIZE:])[0]
 

@@ -120,3 +120,7 @@ class Prefix(object):
         self.tag = Tag(data=value[:Tag.SIZE])
         self.length = struct.unpack('>i', value[Tag.SIZE:Tag.SIZE+4])[0]
 
+    def __str__(self):
+        return ("ControlHost Prefix with tag '{0}' ({1} bytes of data)"
+                .format(self.tag, self.length))
+

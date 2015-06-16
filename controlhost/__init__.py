@@ -37,7 +37,9 @@ class Client(object):
 
     def get_message(self):
         prefix = Prefix(data=self.socket.recv(Prefix.SIZE))
-        message = self.socket.recv(prefix.length)
+        message = ''
+        while len(message) < prefix.length:
+            message += self.socket.recv(1024)
         return prefix, message
 
     def _connect(self):

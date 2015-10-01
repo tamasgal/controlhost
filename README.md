@@ -1,4 +1,4 @@
 controlhost
 ===========
 
-A set of classes and tools which uses the ControlHost protocol
+A set of classes and tools which implements the ControlHost protocol.

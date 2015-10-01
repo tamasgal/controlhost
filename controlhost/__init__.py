@@ -28,9 +28,30 @@ class Client(object):
         self.host = host
         self.port = port
         self.socket = None
+        self.tags = []
 
-    def subscribe(self, tag):
-        message = Message('_Subscri', ' w ' + tag)
+    def subscribe(self, tag, mode='wait'):
+        full_tag = self._full_tag(tag, mode)
+        if full_tag not in self.tags:
+            self.tags.append(full_tag)
+        self._update_subscriptions()
+
+    def unsubscribe(self, tag, mode='wait'):
+        try:
+            self.tags.remove(self._full_tag(tag, mode))
+        except ValueError:
+            pass
+        else:
+            self._update_subscriptions()
+
+    def _full_tag(self, tag, mode):
+        mode_flag = ' w ' if mode == 'wait' else ' a '
+        full_tag = mode_flag + tag
+        return full_tag
+
+    def _update_subscriptions(self):
+        tags = ''.join(self.tags)
+        message = Message('_Subscri', tags)
         self.socket.send(message.data)
         message = Message('_Always')
         self.socket.send(message.data)

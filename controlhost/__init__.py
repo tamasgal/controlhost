@@ -22,6 +22,9 @@ __email__ = "tgal@km3net.de"
 __status__ = "Development"
 
 
+BUFFER_SIZE = 1024
+
+
 class Client(object):
     """The ControlHost client"""
     def __init__(self, host, port=5553):
@@ -60,7 +63,8 @@ class Client(object):
         prefix = Prefix(data=self.socket.recv(Prefix.SIZE))
         message = ''
         while len(message) < prefix.length:
-            message += self.socket.recv(1024)
+            buffer_size = min((BUFFER_SIZE, (prefix.length - len(message))))
+            message += self.socket.recv(buffer_size)
         return prefix, message
 
     def _connect(self):

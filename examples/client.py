@@ -1,6 +1,6 @@
 from controlhost import Client
 
-with Client('131.188.161.241') as client:
+with Client('127.0.0.1') as client:
     client.subscribe('foo')
     try:
         while True:

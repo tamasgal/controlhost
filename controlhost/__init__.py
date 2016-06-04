@@ -62,7 +62,7 @@ class Client(object):
         return full_tag
 
     def _update_subscriptions(self):
-        log.debug("Subscribing to tags: {0}".fromat(self.tags))
+        log.debug("Subscribing to tags: {0}".format(self.tags))
         tags = ''.join(self.tags)
         message = Message('_Subscri', tags)
         self.socket.send(message.data)

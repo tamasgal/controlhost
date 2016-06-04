@@ -73,7 +73,7 @@ class Client(object):
         while True:
             log.info("     Waiting for control host Prefix")
             prefix = Prefix(data=self.socket.recv(Prefix.SIZE))
-            if valid_tag.match(prefix.tag) is None:
+            if valid_tag.match(str(prefix.tag)) is None:
                 log.error("Invalid tag or corrupt message recieved: '{0}'"
                           .format(prefix.tag))
                 self._reconnect()

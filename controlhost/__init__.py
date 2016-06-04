@@ -11,6 +11,8 @@ from controlhost.__version__ import version
 import socket
 import struct
 
+from km3pipe.logger import logging
+
 __author__ = "Tamas Gal"
 __copyright__ = ("Copyright 2014, Tamas Gal and the KM3NeT collaboration "
                  "(http://km3net.org)")
@@ -21,6 +23,7 @@ __maintainer__ = "Tamas Gal"
 __email__ = "tgal@km3net.de"
 __status__ = "Development"
 
+log = logging.getLogger(__name__)
 
 BUFFER_SIZE = 1024
 
@@ -60,12 +63,18 @@ class Client(object):
         self.socket.send(message.data)
 
     def get_message(self):
+        log.info("     Waiting for control host Prefix")
         prefix = Prefix(data=self.socket.recv(Prefix.SIZE))
         message = ''
+        log.info("       got a Prefix with {0} bytes.".format(prefix.length))
         while len(message) < prefix.length:
+            log.info("          message length: {0}".format(len(message)))
+            log.info("            (getting next part)")
             buffer_size = min((BUFFER_SIZE, (prefix.length - len(message))))
             message += self.socket.recv(buffer_size)
-        return prefix, message
+        log.info("     ------ returning message with {0} bytes"
+                 .format(len(message)))
+        return prefix, message(self)
 
     def _connect(self):
         """Connect to JLigier"""

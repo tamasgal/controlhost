@@ -16,6 +16,8 @@ try:
     from km3pipe.logger import logging
 except ImportError:
     pass
+else:
+    log = logging.getLogger(__name__)
 
 __author__ = "Tamas Gal"
 __copyright__ = ("Copyright 2014, Tamas Gal and the KM3NeT collaboration "
@@ -27,7 +29,6 @@ __maintainer__ = "Tamas Gal"
 __email__ = "tgal@km3net.de"
 __status__ = "Development"
 
-log = logging.getLogger(__name__)
 
 BUFFER_SIZE = 1024
 valid_tag = re.compile(r"^(IO|RC|TRG)_.*$")

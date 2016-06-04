@@ -90,7 +90,7 @@ class Client(object):
             message += self.socket.recv(buffer_size)
         log.info("     ------ returning message with {0} bytes"
                  .format(len(message)))
-        return prefix, message(self)
+        return prefix, message
 
     def _connect(self):
         """Connect to JLigier"""

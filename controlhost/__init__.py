@@ -10,8 +10,12 @@ from controlhost.__version__ import version
 
 import socket
 import struct
+import re
 
-from km3pipe.logger import logging
+try:
+    from km3pipe.logger import logging
+except ImportError:
+    pass
 
 __author__ = "Tamas Gal"
 __copyright__ = ("Copyright 2014, Tamas Gal and the KM3NeT collaboration "
@@ -26,6 +30,7 @@ __status__ = "Development"
 log = logging.getLogger(__name__)
 
 BUFFER_SIZE = 1024
+valid_tag = re.compile(r"^(IO|RC|TRG)_.*$")
 
 
 class Client(object):
@@ -56,6 +61,7 @@ class Client(object):
         return full_tag
 
     def _update_subscriptions(self):
+        log.debug("Subscribing to tags: {0}".fromat(self.tags))
         tags = ''.join(self.tags)
         message = Message('_Subscri', tags)
         self.socket.send(message.data)
@@ -63,8 +69,17 @@ class Client(object):
         self.socket.send(message.data)
 
     def get_message(self):
-        log.info("     Waiting for control host Prefix")
-        prefix = Prefix(data=self.socket.recv(Prefix.SIZE))
+        while True:
+            log.info("     Waiting for control host Prefix")
+            prefix = Prefix(data=self.socket.recv(Prefix.SIZE))
+            if valid_tag.match(prefix.tag) is None:
+                log.error("Invalid tag or corrupt message recieved: '{0}'"
+                          .format(prefix.tag))
+                self._reconnect()
+                continue
+            else:
+                break
+
         message = ''
         log.info("       got a Prefix with {0} bytes.".format(prefix.length))
         while len(message) < prefix.length:
@@ -78,13 +93,22 @@ class Client(object):
 
     def _connect(self):
         """Connect to JLigier"""
+        log.debug("Connecting to JLigier")
         self.socket = socket.socket()
         self.socket.connect((self.host, self.port))
 
     def _disconnect(self):
         """Close the socket"""
+        log.debug("Disconnecting from JLigier")
         if self.socket:
             self.socket.close()
+
+    def _reconnect(self):
+        """Reconnect to JLigier and subscribe to the tags."""
+        log.debug("Reconnecting to JLigier...")
+        self._disconnect()
+        self._connect()
+        self._update_subscriptions()
 
     def __enter__(self):
         self._connect()

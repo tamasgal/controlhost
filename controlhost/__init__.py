@@ -10,7 +10,6 @@ from controlhost.__version__ import version
 
 import socket
 import struct
-import re
 
 try:
     from km3pipe.logger import logging
@@ -31,7 +30,6 @@ __status__ = "Development"
 
 
 BUFFER_SIZE = 1024
-valid_tag = re.compile(r"^(IO|RC|TRG)_.*$")
 
 
 class Client(object):
@@ -41,11 +39,14 @@ class Client(object):
         self.port = port
         self.socket = None
         self.tags = []
+        self.valid_tags = []
 
     def subscribe(self, tag, mode='wait'):
         full_tag = self._full_tag(tag, mode)
         if full_tag not in self.tags:
             self.tags.append(full_tag)
+        if tag not in self.valid_tags:
+            self.valid_tags.append(tag)
         self._update_subscriptions()
 
     def unsubscribe(self, tag, mode='wait'):
@@ -73,8 +74,8 @@ class Client(object):
         while True:
             log.info("     Waiting for control host Prefix")
             prefix = Prefix(data=self.socket.recv(Prefix.SIZE))
-            if valid_tag.match(str(prefix.tag)) is None:
-                log.error("Invalid tag or corrupt message recieved: '{0}'"
+            if str(prefix.tag) not in self.valid_tags:
+                log.error("Invalid tag '{0}' received, ignoring the message."
                           .format(prefix.tag))
                 self._reconnect()
                 continue

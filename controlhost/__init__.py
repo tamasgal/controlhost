@@ -45,13 +45,15 @@ class Client(object):
         full_tag = self._full_tag(tag, mode)
         if full_tag not in self.tags:
             self.tags.append(full_tag)
-        if tag not in self.valid_tags:
-            self.valid_tags.append(tag)
+        for t in tag.split():
+            if t not in self.valid_tags:
+                self.valid_tags.append(t)
         self._update_subscriptions()
 
     def unsubscribe(self, tag, mode='wait'):
         try:
             self.tags.remove(self._full_tag(tag, mode))
+            self.valid_tags.remove(tag)
         except ValueError:
             pass
         else:

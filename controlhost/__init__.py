@@ -66,10 +66,10 @@ class Client(object):
 
     def _update_subscriptions(self):
         log.debug("Subscribing to tags: {0}".format(self.tags))
-        tags = ''.join(self.tags)
-        message = Message('_Subscri', tags)
+        tags = ''.join(self.tags).encode("ascii")
+        message = Message(b'_Subscri', tags)
         self.socket.send(message.data)
-        message = Message('_Always')
+        message = Message(b'_Always')
         self.socket.send(message.data)
 
     def get_message(self):
@@ -79,6 +79,7 @@ class Client(object):
             if str(prefix.tag) not in self.valid_tags:
                 log.error("Invalid tag '{0}' received, ignoring the message."
                           .format(prefix.tag))
+                print("Valid tags are: {0}".format(self.valid_tags))
                 self._reconnect()
                 continue
             else:
@@ -124,7 +125,7 @@ class Client(object):
 
 class Message(object):
     """The representation of a ControlHost message."""
-    def __init__(self, tag, message=''):
+    def __init__(self, tag, message=b''):
         self.prefix = Prefix(tag, len(message))
         self.message = message
 
@@ -158,7 +159,7 @@ class Tag(object):
             self._data += b'\x00'
 
     def __str__(self):
-        return str(self.data).strip('\x00')
+        return self.data.decode(encoding='UTF-8').strip('\x00')
 
     def __len__(self):
         return len(self._data)

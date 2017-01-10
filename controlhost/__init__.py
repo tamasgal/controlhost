@@ -85,7 +85,7 @@ class Client(object):
             else:
                 break
 
-        message = ''
+        message = b''
         log.info("       got a Prefix with {0} bytes.".format(prefix.length))
         while len(message) < prefix.length:
             log.info("          message length: {0}".format(len(message)))

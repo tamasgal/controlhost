@@ -5,6 +5,7 @@ A set of classes and tools wich uses the ControlHost protocol.
 """
 from __future__ import absolute_import, print_function, division
 
+from collections import namedtuple
 import socket
 import struct
 import time
@@ -26,16 +27,22 @@ log = get_logger(__name__)
 
 BUFFER_SIZE = 1024
 
+CHResponse = namedtuple("CHResponse", ["prefix", "data"])
+
 
 class Client(object):
     """The ControlHost client"""
 
-    def __init__(self, host, port=5553):
+    def __init__(self, host, port=5553, tag=None):
         self.host = host
         self.port = port
         self.socket = None
         self.tags = []
         self.valid_tags = []
+
+        if tag is not None:
+            self._connect()
+            self.subscribe(tag)
 
     def subscribe(self, tag, mode='wait'):
         if mode not in ['wait', 'all']:
@@ -94,10 +101,13 @@ class Client(object):
                 continue
 
             if prefix_tag not in self.valid_tags:
-                log.error("Invalid tag '{0}' received, ignoring the message \n"
-                          "and reconnecting.\n"
-                          "  -> valid tags are: {1}".format(
-                              prefix_tag, self.valid_tags))
+                log.error(
+                    "Invalid tag '{0}' received, ignoring the message \n"
+                    "and reconnecting.\n"
+                    "  -> valid tags are: {1}".format(
+                        prefix_tag, self.valid_tags
+                    )
+                )
                 self._reconnect()
                 continue
             else:
@@ -114,9 +124,12 @@ class Client(object):
             except OSError:
                 log.error("Failed to construct message.")
                 raise BufferError
-        log.info("     ------ returning message with {0} bytes".format(
-            len(message)))
-        return prefix, message
+        log.info(
+            "     ------ returning message with {0} bytes".format(
+                len(message)
+            )
+        )
+        return CHResponse(prefix, message)
 
     def _connect(self):
         """Connect to JLigier"""
@@ -141,7 +154,7 @@ class Client(object):
         self._connect()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exit_type, value, traceback):
         self._disconnect()
 
 
@@ -213,5 +226,8 @@ class Prefix(object):
         self.length = struct.unpack('>i', value[Tag.SIZE:Tag.SIZE + 4])[0]
 
     def __str__(self):
-        return ("ControlHost Prefix with tag '{0}' ({1} bytes of data)".format(
-            self.tag, self.length))
+        return (
+            "ControlHost Prefix with tag '{0}' ({1} bytes of data)".format(
+                self.tag, self.length
+            )
+        )
